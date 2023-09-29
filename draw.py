@@ -30,7 +30,7 @@ class Draw:
             for j in range(0, 4):
                 self.board.blit(self.tiles, (32 * i, 32 * j))
 
-    def draw_board(self):
+    def draw_board(self, screen):
         canvas = pygame.Surface((192, 192))
         canvas.blit(self.board, (32, 32))
         for x in range(0, 8):
