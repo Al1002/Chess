@@ -41,10 +41,10 @@ class Board:
         self.__place_piece(Piece(6,0,'black','knight'))
         self.__place_piece(Piece(1,7,'white','knight'))
         self.__place_piece(Piece(6,7,'white','knight'))
-        self.__place_piece(Piece(2,0,'white','bishop'))
-        self.__place_piece(Piece(5,0,'white','bishop'))
         self.__place_piece(Piece(2,7,'black','bishop'))
         self.__place_piece(Piece(5,7,'black','bishop'))
+        self.__place_piece(Piece(2,0,'white','bishop'))
+        self.__place_piece(Piece(5,0,'white','bishop'))
         self.__place_piece(Piece(3,0,'black','queen'))
         self.__place_piece(Piece(3,7,'white','queen'))
         self.__place_piece(Piece(4,0,'black','king'))
@@ -65,7 +65,7 @@ class Board:
     def move_piece(self, x: int, y: int):
         0
 
-    def get_board(self):
+    def get_board_arr(self):
         return self.board_arr
     def get_selected(self):
         return self.selected
