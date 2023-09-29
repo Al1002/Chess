@@ -40,10 +40,9 @@ class Game_object:
             
             # draw.draw_board(self.board) 
             self.screen.fill("purple")
-            d = Draw(self.board.get_board(), self.board.get_selected(), self.board.get_highlighted())
-            d.draw_board(self.screen)
-            pygame.display.flip()
-            
+            draw = Draw()
+            draw.draw_board(self.screen, self.board)
+            pygame.display.flip()            
 
             self.clock.tick(60)  # limits FPS to 60
         pygame.quit()
