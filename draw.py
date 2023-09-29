@@ -14,8 +14,8 @@ class Draw:
         self.pieces['black_rook'] = self.texture.subsurface((91, 39, 13, 17))
         self.pieces['white_knight'] = self.texture.subsurface((45, 63, 17, 17))
         self.pieces['black_knight'] = self.texture.subsurface((63, 63, 17, 17))
-        self.pieces['white_bishop'] = self.texture.subsurface((81, 61, 13, 19))
-        self.pieces['black_bishop'] = self.texture.subsurface((95, 61, 13, 19))
+        self.pieces['white_bishop'] = self.texture.subsurface((95, 61, 13, 19))
+        self.pieces['black_bishop'] = self.texture.subsurface((81, 61, 13, 19))
         self.pieces['white_queen'] = self.texture.subsurface((48, 83, 13, 21))
         self.pieces['black_queen'] = self.texture.subsurface((62, 83, 13, 21))
         self.pieces['white_king'] = self.texture.subsurface((78, 81, 13, 23))
@@ -62,9 +62,6 @@ if __name__ == '__main__':
     pygame.init()
     screen = pygame.display.set_mode((768, 768))
     screen.fill((0, 0, 0))
-    for y in range(8): # adds some highlights
-        board_obj.highlighted.append([4, y])
-    board_obj.selected = [4,7] # selects white king
     draw_obj.draw_board(screen, board_obj)
     pygame.display.update()
     while True:
@@ -72,7 +69,7 @@ if __name__ == '__main__':
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
-            if event.type == pygame.MOUSEBUTTONDOWN: # on click, lowers king and calls draw_board()
+            if event.type == pygame.MOUSEBUTTONUP: # on click, lowers king and calls draw_board()
                 print('click')
-                board_obj.selected = 0
+                board_obj.select_piece(4,7)
                 draw_obj.draw_board(screen, board_obj)
