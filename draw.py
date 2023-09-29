@@ -1,6 +1,6 @@
+import sys
 import pygame
 import board 
-import sys
 
 class Draw:
     def __init__(self):
@@ -64,12 +64,13 @@ if __name__ == '__main__':
     screen.fill((0, 0, 0))
     draw_obj.draw_board(screen, board_obj)
     pygame.display.update()
+    board_obj.update_moves()
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
-            if event.type == pygame.MOUSEBUTTONUP: # on click, lowers king and calls draw_board()
+            if event.type == pygame.MOUSEBUTTONDOWN: # on click, lowers king and calls draw_board()
                 print('click')
-                board_obj.select_piece(4,7)
+                board_obj.select_piece(4,4, 'black')
                 draw_obj.draw_board(screen, board_obj)

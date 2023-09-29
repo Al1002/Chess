@@ -1,10 +1,8 @@
-
-#TODO: implement public select_piece, move_piece and private __piece_update_moves
-
 class Piece:
     def __init__(self, x: int, y: int, color, type):
         self.x = x
         self.y = y
+        self.moves = []
         if not (color == 'black' or color == 'white'):
             raise ValueError('Invalid color')
         self.color = color
@@ -37,9 +35,12 @@ class Board:
                 return [x,y]
             else:
                 return 0
-        if color != self.board_arr[x][y].color:
-            return [x,y]
-        return 0
+        else:
+            if self.board_arr[x][y] == 0:
+                return 0
+            if color != self.board_arr[x][y].color:
+                return [x,y]
+            return 0
     
     def __add_move(self, moves: list, x: int, y: int, color):
         move = self.__check_move(x,y,color)
@@ -58,8 +59,8 @@ class Board:
             moves = self.__add_move(moves, piece.x, piece.y + dir_y, 0) # forward
             for dir_x in [-1, 1]:
                 moves = self.__add_move(moves, piece.x + dir_x, piece.y + dir_y, piece.color) # captures
-            if piece.y == 3.5 + 2.5 * dir_y and self.__check_move(piece.x, piece.y + dir_y, 0) != 0:
-                moves = self.__add_move(moves, piece.x, piece.y + 2 * dir_y, piece.color) # double first move
+            if piece.y == 3.5 - 2.5 * dir_y and self.__check_move(piece.x, piece.y + dir_y, 0) != 0:
+                moves = self.__add_move(moves, piece.x, piece.y + 2 * dir_y, 0) # double first move
             # no an pasant :(
         if piece.type == 'bishop':
             for dir_x, dir_y in [[1, 1], [1, -1], [-1, 1], [-1, -1]]:
@@ -95,8 +96,8 @@ class Board:
                     moves.append(move)
         if piece.type == 'knight':
             for dir_x, dir_y in [[1,2],[2,1],[-1,2],[-2,1],[1,-2],[2,-1],[-1,-2],[-2,-1]]: 
-                moves = self.__add_move(moves, piece.x + dir_x * i, piece.y + dir_y * i, 0)
-                moves = self.__add_move(moves, piece.x + dir_x * i, piece.y + dir_y * i, piece.color())
+                moves = self.__add_move(moves, piece.x + dir_x, piece.y + dir_y, 0)
+                moves = self.__add_move(moves, piece.x + dir_x, piece.y + dir_y, piece.color)
         return moves
         
     def __init__(self):
@@ -120,24 +121,37 @@ class Board:
         self.__place_piece(Piece(3,7,'white','queen'))
         self.__place_piece(Piece(4,0,'black','king'))
         self.__place_piece(Piece(4,7,'white','king'))
+        
+        self.__place_piece(Piece(4,4,'black','queen')) # for testing purposes only
         self.selected = 0
         self.highlighted = []
         
-    def select_piece(self, x: int, y: int):
+    def update_moves(self):
+        for x in range(8):
+            for y in range(8):
+                piece = self.board_arr[x][y]
+                if piece != 0:
+                    piece.moves = self.__piece_create_moves(piece)
+
+    def select_piece(self, x: int, y: int, color):
         piece = self.board_arr[x][y]
         if piece == 0:
-            return
+            return 0
+        if piece.color != color:
+            return 0
         if self.selected == [x, y]: # selecting already selected => disselect
             self.selected = 0
             self.highlighted = []
-            return
+            return 1 
         self.selected = [x, y]
-        self.highlighted = self.__piece_create_moves(piece)
-
+        self.highlighted = piece.moves
+        return 1
     def move_piece(self, x: int, y: int):
         if [x,y] in self.selected.moves:
             self.select_piece(self.selected.x, self.selected.y) # disselect
             self.__move_piece(x, y, self.selected)
+            return 1
+        return 0
 
     def get_board_arr(self):
         return self.board_arr
