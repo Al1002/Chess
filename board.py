@@ -14,7 +14,7 @@ class Piece:
 
 class Board:
 
-    board_arr =[[]]
+    #board_arr =[[]]
 
     def __place_piece(self, piece: Piece):
         self.board_arr[piece.x][piece.y] = piece
@@ -67,3 +67,7 @@ class Board:
 
     def get_board(self):
         return self.board_arr
+    def get_selected(self):
+        return self.selected
+    def get_highlighted(self):
+        return self.highlighted

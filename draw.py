@@ -9,22 +9,22 @@ class Draw:
         self.selected_piece = selected_piece
         self.highlighted_squares = highlighted_squares
         # take assets from assets folder
-        texture = pygame.image.load('assets/ChessAssets.png')
+        self.texture = pygame.image.load('assets/ChessAssets.png')
         # create a dictionary of all the pieces
         self.pieces = {}
-        self.pieces['white_pawn'] = texture.subsurface((48, 40, 13, 16))
-        self.pieces['black_pawn'] = texture.subsurface((62, 40, 13, 16))
-        self.pieces['white_rook'] = texture.subsurface((77, 39, 13, 17))
-        self.pieces['black_rook'] = texture.subsurface((91, 39, 13, 17))
-        self.pieces['white_knight'] = texture.subsurface((45, 63, 17, 17))
-        self.pieces['black_knight'] = texture.subsurface((63, 63, 17, 17))
-        self.pieces['white_bishop'] = texture.subsurface((81, 61, 13, 19))
-        self.pieces['black_bishop'] = texture.subsurface((95, 61, 13, 19))
-        self.pieces['white_queen'] = texture.subsurface((48, 83, 13, 21))
-        self.pieces['black_queen'] = texture.subsurface((62, 83, 13, 21))
-        self.pieces['white_king'] = texture.subsurface((78, 81, 13, 23))
-        self.pieces['black_king'] = texture.subsurface((92, 81, 13, 23))
-        self.tiles = texture.subsurface((72, 0, 32, 32))
+        self.pieces['white_pawn'] = self.texture.subsurface((48, 40, 13, 16))
+        self.pieces['black_pawn'] = self.texture.subsurface((62, 40, 13, 16))
+        self.pieces['white_rook'] = self.texture.subsurface((77, 39, 13, 17))
+        self.pieces['black_rook'] = self.texture.subsurface((91, 39, 13, 17))
+        self.pieces['white_knight'] = self.texture.subsurface((45, 63, 17, 17))
+        self.pieces['black_knight'] = self.texture.subsurface((63, 63, 17, 17))
+        self.pieces['white_bishop'] = self.texture.subsurface((81, 61, 13, 19))
+        self.pieces['black_bishop'] = self.texture.subsurface((95, 61, 13, 19))
+        self.pieces['white_queen'] = self.texture.subsurface((48, 83, 13, 21))
+        self.pieces['black_queen'] = self.texture.subsurface((62, 83, 13, 21))
+        self.pieces['white_king'] = self.texture.subsurface((78, 81, 13, 23))
+        self.pieces['black_king'] = self.texture.subsurface((92, 81, 13, 23))
+        self.tiles = self.texture.subsurface((72, 0, 32, 32))
         self.board = pygame.Surface((128, 128))
         for i in range(0, 4):
             for j in range(0, 4):
@@ -33,12 +33,16 @@ class Draw:
     def draw_board(self, screen):
         canvas = pygame.Surface((192, 192))
         canvas.blit(self.board, (32, 32))
+        highlight = [self.texture.subsurface(2, 0, 1, 1), self.texture.subsurface(3, 0, 1, 1)]
+        highlight = [pygame.transform.scale(highlight[0], (16, 16)), pygame.transform.scale(highlight[1], (16, 16))]
+        for square in self.highlighted_squares:
+            canvas.blit(highlight[(square[0] + square[1]) % 2], (32 + 16 * square[0], 32 + 16 * square[1]))
         for x in range(0, 8):
             for y in range(0, 8):
                 if self.board_data[x][y] != 0:
                     piece = self.pieces[self.board_data[x][y].color + '_' + self.board_data[x][y].type]
                     w, h = piece.get_size()
-                    canvas.blit(piece, (40 + 16 * x - w/2, 44 + 16 * y - h))
+                    canvas.blit(piece, (40 + 16 * x - w/2, 44 + 16 * y - h - (self.selected_piece == (x, y)) * 8))
 
         
         canvas = pygame.transform.scale(canvas, (768, 768))
