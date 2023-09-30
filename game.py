@@ -3,10 +3,6 @@ import input_device
 import board
 from draw import Draw
 
-# tldr the game gives a copy of the board to 
-# the player and runs input(), which will return 
-# the updated board upon successful input (inludes select piece)
-
 class Game_object:
     def __init__(self):
         pygame.init()
@@ -34,6 +30,9 @@ class Game_object:
 
             if game_change:
                 self.board.update_moves()
+                # if an passant-able, add an passant move
+                # do check/checkmate checks, alter moves accordingly
+                # if checkmate, win
                 game_change = 0
             
             if view_change:
