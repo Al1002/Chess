@@ -2,48 +2,63 @@ import pygame
 import input_device
 import board
 from draw import Draw
-import sys
-
-# tldr the game gives a copy of the board to 
-# the player and runs input(), which will return 
-# the updated board upon successful input (inludes select piece)
+from pygame.display import gl_get_attribute
+from pygame.mixer_music import play
 
 class Game_object:
     def __init__(self):
         pygame.init()
         self.screen = pygame.display.set_mode((768, 768))
+        self.draw = Draw()
         self.clock = pygame.time.Clock()
-        self.running = True
+        # self.running = True
         self.board = board.Board()
-        self.player1 = input_device.Input_device()
-        self.player2 = input_device.Input_device()
     
+    def __switch_player(self, player):
+        if player == 'white':
+            return 'black'
+        if player == 'black':
+            return 'white'
+
     def run(self):
-        active_player = self.player1
-        while self.running:
+        player = 'white'
+        self.board.update_moves()
+        self.draw.draw_board(self.screen, self.board)
+        game_change = 0
+        view_change = 0
+        pause = 0
+        while True:
+            input = input_device.input()
+            if input == -1:
+                break # -1 is termination signal
+            if input == 0 or input == None:
+                continue # if nothing happens, we do nothing
+            if pause:
+                continue
 
-            # quit event (should be changed)
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    pygame.quit()
-                    sys.exit()
-
-            # place holder for input
-            input = active_player.input()
-            if  input == -1:
-                running = 0 # -1 is termination signal
-            if input == 0:
-                0 # does nothing
+            if self.board.selected == 0 or self.board.get_selected() == [input[0], input[1]]:
+                view_change = self.board.select_piece(input[0], input[1], player)
             else:
-                self.board = input
-                # change active input
-            
-            # draw.draw_board(self.board) 
-            self.screen.fill("purple")
-            draw = Draw()
-            draw.draw_board(self.screen, self.board)
-            pygame.display.flip()            
+                game_change = self.board.move_piece(input[0], input[1], player)
 
+            if game_change:
+                self.board.update_moves()
+                # placeholder win
+                if game_change == 2:
+                    print(player + ' won!')
+                    pause = 1
+                # do checkmate checks, alter moves accordingly
+                # if an passant-able, add an passant move
+                player = self.__switch_player(player)
+                game_change = 0
+                view_change = 1
+            
+            if view_change:
+                self.screen.fill("purple")
+                self.draw.draw_board(self.screen, self.board) 
+                # pygame.display.flip() # redundant
+                view_change = 0
+            
             self.clock.tick(60)  # limits FPS to 60
         pygame.quit()
 
