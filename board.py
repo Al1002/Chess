@@ -121,8 +121,6 @@ class Board:
         self.__place_piece(Piece(3,7,'white','queen'))
         self.__place_piece(Piece(4,0,'black','king'))
         self.__place_piece(Piece(4,7,'white','king'))
-        
-        self.__place_piece(Piece(4,4,'black','queen')) # for testing purposes only
         self.selected = 0
         self.highlighted = []
         
@@ -146,11 +144,17 @@ class Board:
         self.selected = [x, y]
         self.highlighted = piece.moves
         return 1
-    def move_piece(self, x: int, y: int):
-        if [x,y] in self.selected.moves:
-            self.select_piece(self.selected.x, self.selected.y) # disselect
-            self.__move_piece(x, y, self.selected)
-            return 1
+
+    def move_piece(self, x: int, y: int, color):
+        if [x,y] in self.board_arr[self.selected[0]][self.selected[1]].moves:
+            rval = 1
+            
+            if self.board_arr[x][y] and self.board_arr[x][y].type == 'king':
+                rval = 2
+            self.__move_piece(x, y, self.board_arr[self.selected[0]][self.selected[1]])
+            self.selected = 0
+            self.highlighted = []
+            return rval
         return 0
 
     def get_board_arr(self):
@@ -162,4 +166,4 @@ class Board:
 
 if __name__ == "__main__":
     board_obj = Board()
-    board_obj.select_piece(4,7)
+    board_obj.select_piece(4,7, 'black')

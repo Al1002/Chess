@@ -2,6 +2,8 @@ import pygame
 import input_device
 import board
 from draw import Draw
+from pygame.display import gl_get_attribute
+from pygame.mixer_music import play
 
 class Game_object:
     def __init__(self):
@@ -11,18 +13,29 @@ class Game_object:
         self.clock = pygame.time.Clock()
         # self.running = True
         self.board = board.Board()
+    
+    def __switch_player(self, player):
+        if player == 'white':
+            return 'black'
+        if player == 'black':
+            return 'white'
 
     def run(self):
         player = 'white'
         self.board.update_moves()
         self.draw.draw_board(self.screen, self.board)
+        game_change = 0
+        view_change = 0
+        pause = 0
         while True:
             input = input_device.input()
             if input == -1:
                 break # -1 is termination signal
             if input == 0 or input == None:
                 continue # if nothing happens, we do nothing
-            
+            if pause:
+                continue
+
             if self.board.selected == 0 or self.board.get_selected() == [input[0], input[1]]:
                 view_change = self.board.select_piece(input[0], input[1], player)
             else:
@@ -30,10 +43,15 @@ class Game_object:
 
             if game_change:
                 self.board.update_moves()
+                # placeholder win
+                if game_change == 2:
+                    print(player + ' won!')
+                    pause = 1
+                # do checkmate checks, alter moves accordingly
                 # if an passant-able, add an passant move
-                # do check/checkmate checks, alter moves accordingly
-                # if checkmate, win
+                player = self.__switch_player(player)
                 game_change = 0
+                view_change = 1
             
             if view_change:
                 self.screen.fill("purple")
