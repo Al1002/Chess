@@ -10,6 +10,11 @@ git clone git@github.com:Al1002/Chess.git
 ```
 (or you can just download it)
 
+1.5. If you don't have pygame installed, install it using pip:
+```sh  
+pip3 install pygame
+```
+
 2. Run `main.py` using python
 ```sh
 python3 main.py
