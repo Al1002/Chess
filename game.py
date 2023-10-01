@@ -36,7 +36,7 @@ class Game_object:
             if pause:
                 continue
 
-            if self.board.selected == 0 or self.board.get_selected() == [input[0], input[1]]:
+            if self.board.selected == 0 or self.board.get_selected() == [input[0], input[1]] or self.board.board_arr[input[0]][input[1]].color == player:
                 view_change = self.board.select_piece(input[0], input[1], player)
             else:
                 game_change = self.board.move_piece(input[0], input[1], player)
