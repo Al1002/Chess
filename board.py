@@ -28,6 +28,13 @@ class Board:
         if piece.type == 'pawn' and abs(piece.x - x) == 1 and self.board_arr[x][y] == 0:
             self.__remove_piece(self.board_arr[x][piece.y])
         
+        #castling
+        if piece.type == 'king' and abs(piece.x - x) == 2:
+            if x == 2:
+                self.__move_piece(3, y, self.board_arr[0][y])
+            if x == 6:
+                self.__move_piece(5, y, self.board_arr[7][y])
+        
         self.move_history.append((piece.color, piece.type, (piece.x, piece.y), (x, y)))
         self.__remove_piece(piece)
         piece.x = x
@@ -106,14 +113,35 @@ class Board:
                         moves = self.__add_move(moves, piece.x + dir_x * i, piece.y + dir_y * i, piece.color)
                         break
                     moves.append(move)
+            # castling
+            # check if king has moved
+            # HAS TO BE AT THE END OF THE MOVE LIST!!!
+            k, lr, rr = False, False, False
+            for move in self.move_history:
+                if move[1] == 'king' and move[0] == piece.color:
+                    k = True
+                if move[1] == 'rook' and move[0] == piece.color:
+                    if move[2][0] == 0:
+                        lr = True
+                    if move[2][0] == 7:
+                        rr = True
+            if not k:
+                if not lr:
+                    if self.board_arr[1][piece.y] == 0 and self.board_arr[2][piece.y] == 0 and self.board_arr[3][piece.y] == 0:
+                        moves = self.__add_move(moves, 2, piece.y, 0)
+                if not rr:
+                    if self.board_arr[5][piece.y] == 0 and self.board_arr[6][piece.y] == 0:
+                        moves = self.__add_move(moves, 6, piece.y, 0)
+
         if piece.type == 'knight':
             for dir_x, dir_y in [[1,2],[2,1],[-1,2],[-2,1],[1,-2],[2,-1],[-1,-2],[-2,-1]]: 
                 moves = self.__add_move(moves, piece.x + dir_x, piece.y + dir_y, 0)
                 moves = self.__add_move(moves, piece.x + dir_x, piece.y + dir_y, piece.color)
-        
+
         moves = self.__check4check(moves, piece.color, piece)
+
         return moves
-    
+
     def __check4check(self, moves: list, colour, piece):
         #check if move puts the king in check
         #if so, remove it from the list
@@ -124,6 +152,11 @@ class Board:
         to_remove = []
 
         for move in moves:
+            #castling
+            if piece.type == 'king' and abs(piece.x - move[0]) == 2 and [(piece.x + move[0]) / 2, piece.y] in moves:
+                to_remove.append(move)
+                continue 
+
             sim_board = Board(False)
             sim_board.board_arr = deepcopy(self.board_arr)
             sim_board.__move_piece(move[0], move[1], sim_board.board_arr[piece.x][piece.y])
@@ -148,7 +181,7 @@ class Board:
                     if piece.color != colour:
                         for move in piece.moves:
                             if self.board_arr[move[0]][move[1]] != 0:
-                                if self.board_arr[move[0]][move[1]].type == 'king':
+                                if self.board_arr[move[0]][move[1]].type == 'king' and self.board_arr[move[0]][move[1]].color == colour:
                                     return True
                                 
         return False
