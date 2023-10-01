@@ -42,9 +42,7 @@ class Game_object:
                 game_change = self.board.move_piece(input[0], input[1], player)
 
             if game_change:
-                self.board.update_moves()
-                # placeholder win
-                if game_change == 2:
+                if not self.board.update_moves(self.__switch_player(player)):
                     print(player + ' won!')
                     pause = 1
                 # do checkmate checks, alter moves accordingly

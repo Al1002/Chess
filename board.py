@@ -1,3 +1,5 @@
+from copy import deepcopy
+
 class Piece:
     def __init__(self, x: int, y: int, color, type):
         self.x = x
@@ -108,9 +110,51 @@ class Board:
             for dir_x, dir_y in [[1,2],[2,1],[-1,2],[-2,1],[1,-2],[2,-1],[-1,-2],[-2,-1]]: 
                 moves = self.__add_move(moves, piece.x + dir_x, piece.y + dir_y, 0)
                 moves = self.__add_move(moves, piece.x + dir_x, piece.y + dir_y, piece.color)
-        return moves
         
-    def __init__(self):
+        moves = self.__check4check(moves, piece.color, piece)
+        return moves
+    
+    def __check4check(self, moves: list, colour, piece):
+        #check if move puts the king in check
+        #if so, remove it from the list
+
+        if self.check_check == False: #to avoid recursion
+            return moves
+
+        to_remove = []
+
+        for move in moves:
+            sim_board = Board(False)
+            sim_board.board_arr = deepcopy(self.board_arr)
+            sim_board.__move_piece(move[0], move[1], sim_board.board_arr[piece.x][piece.y])
+            sim_board.update_moves()
+            if sim_board.__check4check_helper(colour):
+                to_remove.append(move)  
+        
+        for move in to_remove:
+            moves.remove(move)
+
+        return moves
+    
+    def __check4check_helper(self, colour):
+        #check if king is in check
+        #if so, return True
+        #else, return False
+        
+        for x in range(8):
+            for y in range(8):
+                piece = self.board_arr[x][y]
+                if piece != 0:
+                    if piece.color != colour:
+                        for move in piece.moves:
+                            if self.board_arr[move[0]][move[1]] != 0:
+                                if self.board_arr[move[0]][move[1]].type == 'king':
+                                    return True
+                                
+        return False
+        
+    def __init__(self, check_check = True):
+        self.check_check = check_check
         self.board_arr = [[0 for y in range(8)] for x in range(8)]
         for x in range(8):
             self.__place_piece(Piece(x,1,'black','pawn'))
@@ -136,12 +180,16 @@ class Board:
         self.move_history = []
         #(colour, piece, (fx, fy), (tx, ty))
         
-    def update_moves(self):
+    def update_moves(self, colour = 0):
+        any_moves = False
         for x in range(8):
             for y in range(8):
                 piece = self.board_arr[x][y]
                 if piece != 0:
                     piece.moves = self.__piece_create_moves(piece)
+                    if len(piece.moves) > 0 and piece.color == colour:
+                        any_moves = True
+        return any_moves
 
     def select_piece(self, x: int, y: int, color):
         piece = self.board_arr[x][y]
