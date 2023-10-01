@@ -153,7 +153,7 @@ class Board:
 
         for move in moves:
             #castling
-            if piece.type == 'king' and abs(piece.x - move[0]) == 2 and [(piece.x + move[0]) / 2, piece.y] in moves:
+            if piece.type == 'king' and abs(piece.x - move[0]) == 2 and [(piece.x + move[0]) / 2, piece.y] in to_remove:
                 to_remove.append(move)
                 continue 
 
