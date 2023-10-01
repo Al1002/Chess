@@ -22,6 +22,11 @@ class Board:
         self.board_arr[piece.x][piece.y] = 0
 
     def __move_piece(self, x: int, y: int, piece: Piece):
+        # an passant
+        if piece.type == 'pawn' and abs(piece.x - x) == 1 and self.board_arr[x][y] == 0:
+            self.__remove_piece(self.board_arr[x][piece.y])
+        
+        self.move_history.append((piece.color, piece.type, (piece.x, piece.y), (x, y)))
         self.__remove_piece(piece)
         piece.x = x
         piece.y = y
@@ -61,7 +66,12 @@ class Board:
                 moves = self.__add_move(moves, piece.x + dir_x, piece.y + dir_y, piece.color) # captures
             if piece.y == 3.5 - 2.5 * dir_y and self.__check_move(piece.x, piece.y + dir_y, 0) != 0:
                 moves = self.__add_move(moves, piece.x, piece.y + 2 * dir_y, 0) # double first move
-            # no an pasant :(
+            # no an pasant :( 
+            # adding an passant
+            if len(self.move_history) > 0:
+                last_move = self.move_history[-1]
+                if last_move[1] == 'pawn' and abs(last_move[3][1] - last_move[2][1]) == 2 and last_move[3][1] == piece.y and abs(last_move[3][0] - piece.x) == 1:
+                    moves = self.__add_move(moves, last_move[3][0], last_move[3][1] + dir_y, 0) 
         if piece.type == 'bishop':
             for dir_x, dir_y in [[1, 1], [1, -1], [-1, 1], [-1, -1]]:
                 for i in range(1,8):
@@ -123,6 +133,8 @@ class Board:
         self.__place_piece(Piece(4,7,'white','king'))
         self.selected = 0
         self.highlighted = []
+        self.move_history = []
+        #(colour, piece, (fx, fy), (tx, ty))
         
     def update_moves(self):
         for x in range(8):
