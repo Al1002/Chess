@@ -245,8 +245,7 @@ class Board:
     def move_piece(self, x: int, y: int, color):
         if [x,y] in self.board_arr[self.selected[0]][self.selected[1]].moves:
             rval = 1
-            
-            if self.board_arr[x][y] and self.board_arr[x][y].type == 'king':
+            if self.board_arr[self.selected[0]][self.selected[1]].type == 'pawn' and y == 7 * (color == 'black'):
                 rval = 2
             self.__move_piece(x, y, self.board_arr[self.selected[0]][self.selected[1]])
             self.selected = 0

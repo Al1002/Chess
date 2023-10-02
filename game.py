@@ -2,8 +2,6 @@ import pygame
 import input_device
 import board
 from draw import Draw
-from pygame.display import gl_get_attribute
-from pygame.mixer_music import play
 
 class Game_object:
     def __init__(self):
@@ -26,8 +24,19 @@ class Game_object:
         self.draw.draw_board(self.screen, self.board)
         game_change = 0
         view_change = 0
+        promotion = 0
         pause = 0
         while True:
+            if promotion:
+                input = input_device.promotion_input(player)
+                if input == -1:
+                    break
+                if input == 0 or input == None:
+                    continue
+                self.board.board_arr[promotion_pos[0]][promotion_pos[1]].type = input
+                promotion = 0
+                self.draw.draw_board(self.screen, self.board) 
+            
             input = input_device.input()
             if input == -1:
                 break # -1 is termination signal
@@ -43,13 +52,17 @@ class Game_object:
                     view_change = self.board.select_piece(input[0], input[1], player)
                 else:
                     game_change = self.board.move_piece(input[0], input[1], player)
+            
+            if game_change == 2:
+                # self.draw.promotion(player) 
+                promotion = 1
+                promotion_pos = input
+                game_change = 1    
 
             if game_change:
                 if not self.board.update_moves(self.__switch_player(player)):
                     print(player + ' won!')
                     pause = 1
-                # do checkmate checks, alter moves accordingly
-                # if an passant-able, add an passant move
                 player = self.__switch_player(player)
                 game_change = 0
                 view_change = 1
@@ -57,7 +70,6 @@ class Game_object:
             if view_change:
                 self.screen.fill("purple")
                 self.draw.draw_board(self.screen, self.board) 
-                # pygame.display.flip() # redundant
                 view_change = 0
             
             self.clock.tick(60)  # limits FPS to 60
