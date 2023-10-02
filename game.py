@@ -28,7 +28,7 @@ class Game_object:
         pause = 0
         while True:
             if promotion:
-                input = input_device.promotion_input(player)
+                input = input_device.promotion_input(promotion_player)
                 if input == -1:
                     break
                 if input == 0 or input == None:
@@ -54,11 +54,10 @@ class Game_object:
                     game_change = self.board.move_piece(input[0], input[1], player)
             
             if game_change == 2:
-                # self.draw.promotion(player) 
                 promotion = 1
                 promotion_pos = input
-                game_change = 1    
-
+                promotion_player = player  
+            
             if game_change:
                 if not self.board.update_moves(self.__switch_player(player)):
                     print(player + ' won!')
@@ -72,6 +71,9 @@ class Game_object:
                 self.draw.draw_board(self.screen, self.board) 
                 view_change = 0
             
+            if promotion:
+                self.draw.promotion(self.screen, promotion_player)
+
             self.clock.tick(60)  # limits FPS to 60
         pygame.quit()
 
