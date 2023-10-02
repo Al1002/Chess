@@ -153,9 +153,9 @@ class Board:
 
         for move in moves:
             #castling
-            if piece.type == 'king' and abs(piece.x - move[0]) == 2 and [(piece.x + move[0]) / 2, piece.y] in to_remove:
+            if piece.type == 'king' and abs(piece.x - move[0]) == 2 and ([(piece.x + move[0]) / 2, piece.y] in to_remove or self.__check4check_helper(colour)):
                 to_remove.append(move)
-                continue 
+                continue
 
             sim_board = Board(False)
             sim_board.board_arr = deepcopy(self.board_arr)
