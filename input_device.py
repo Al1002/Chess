@@ -10,8 +10,6 @@ def input():
             print('click at x: ' + str(event.pos[0]) + ', y: ' + str(event.pos[1]))
             x = int((event.pos[0] - 128) / 64)
             y = int((event.pos[1] - 128) / 64)
-            print(x)
-            print(y)
             if x in range (8) and y in range (8):
                 return [x,y]
     return 0
