@@ -36,6 +36,8 @@ class Board:
                 self.__move_piece(5, y, self.board_arr[7][y])
         
         self.move_history.append((piece.color, piece.type, (piece.x, piece.y), (x, y)))
+        if self.board_arr[x][y] != 0:
+            self.taken.append(self.board_arr[x][y])
         self.__remove_piece(piece)
         piece.x = x
         piece.y = y
@@ -212,6 +214,8 @@ class Board:
         self.highlighted = []
         self.move_history = []
         #(colour, piece, (fx, fy), (tx, ty))
+
+        self.taken = []
         
     def update_moves(self, colour = 0):
         any_moves = False
@@ -256,6 +260,8 @@ class Board:
         return self.selected
     def get_highlighted(self):
         return self.highlighted
+    def get_taken(self):
+        return self.taken
 
 if __name__ == "__main__":
     board_obj = Board()

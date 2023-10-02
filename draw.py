@@ -31,7 +31,8 @@ class Draw:
     # board_arr: 2d array with pieces
     # selected_piece: [x,y] of the selected piece 
     # highlighted_squares: arr of [x,y] of highlited squares
-    def __draw_board(self, screen: pygame.Surface, board_arr: list, selected_piece: list, highlighted_squares: list):
+    # taken = []: arr of Piece objects that have been taken
+    def __draw_board(self, screen: pygame.Surface, board_arr: list, selected_piece: list, highlighted_squares: list, taken = []):
         canvas = pygame.Surface((192, 192))
         canvas.blit(self.board, (32, 32))
         highlight = [self.texture.subsurface(2, 0, 1, 1), self.texture.subsurface(3, 0, 1, 1)]
@@ -44,6 +45,19 @@ class Draw:
                     piece = self.pieces[board_arr[x][y].color + '_' + board_arr[x][y].type]
                     w, h = piece.get_size()
                     canvas.blit(piece, (40 + 16 * x - w/2, 44 + 16 * y - h - (selected_piece == [x, y]) * 6))
+        wt, bt = 32, 32
+        for type in ['queen', 'rook', 'knight', 'bishop', 'pawn']:
+            w = self.pieces['white_' + type].get_size()[0] / 2
+            wl = 20 - w
+            wr = 172 - w
+            for piece in taken:
+                if piece.type == type:
+                    if piece.color == 'white':
+                        canvas.blit(self.pieces['white_' + type], (wl, wt))
+                        wt += 8
+                    else:
+                        canvas.blit(self.pieces['black_' + type], (wr, bt))
+                        bt += 8
         canvas = pygame.transform.scale(canvas, (768, 768))
         screen.blit(canvas, (0, 0))
     
@@ -52,7 +66,7 @@ class Draw:
     # screen: SE
     # board: SE
     def draw_board(self, screen: pygame.Surface, board: board.Board):
-        self.__draw_board(screen, board.get_board_arr(), board.get_selected(), board.get_highlighted())
+        self.__draw_board(screen, board.get_board_arr(), board.get_selected(), board.get_highlighted(), board.get_taken())
         pygame.display.update()
 
 if __name__ == '__main__':
