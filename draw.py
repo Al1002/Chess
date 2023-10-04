@@ -70,13 +70,13 @@ class Draw:
         pygame.display.update()
 
     def promotion(self, screen: pygame.Surface, player):
-        canvas = pygame.Surface((16 * 4, 32))
-        canvas.blit(self.pieces[player + '_knight'], (16 * 0, 0))
-        canvas.blit(self.pieces[player + '_bishop'], (16 * 1, 0))
-        canvas.blit(self.pieces[player + '_rook'], (16 * 2, 0))
-        canvas.blit(self.pieces[player + '_queen'], (16 * 3, 0))
-        canvas = pygame.transform.scale(canvas, (64 * 4, 128))
-        screen.blit(canvas, (256, 32 + (768 - 128) * (player == 'white')))
+        canvas = pygame.Surface((16 * 4, 24))
+        canvas.blit(self.pieces[player + '_knight'], (8 - self.pieces[player + '_knight'].get_size()[0] / 2, 24 - self.pieces[player + '_knight'].get_size()[1]))
+        canvas.blit(self.pieces[player + '_bishop'], (24 - self.pieces[player + '_bishop'].get_size()[0] / 2, 24 - self.pieces[player + '_bishop'].get_size()[1]))
+        canvas.blit(self.pieces[player + '_rook'], (40 - self.pieces[player + '_rook'].get_size()[0] / 2, 24 - self.pieces[player + '_rook'].get_size()[1]))
+        canvas.blit(self.pieces[player + '_queen'], (56 - self.pieces[player + '_queen'].get_size()[0] / 2, 24 - self.pieces[player + '_queen'].get_size()[1]))
+        canvas = pygame.transform.scale(canvas, (64 * 4, 96))
+        screen.blit(canvas, (256, (768 - 128) * (player == 'black')))
         pygame.display.update()
 
 if __name__ == '__main__':

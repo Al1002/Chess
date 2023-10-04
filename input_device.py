@@ -23,7 +23,7 @@ def promotion_input(color):
                 pass
             print('click at x: ' + str(event.pos[0]) + ', y: ' + str(event.pos[1]))
             selection = int((event.pos[0] - 128 - (2 * 64))/64)
-            height = int((event.pos[1] + 32 - (768 - 128) * (color == 'white'))/64)
+            height = int((event.pos[1] + 32 - (768 - 128) * (color == 'black'))/64)
             pieces = ['knight','bishop','rook','queen']
             if height == 1 and selection in range(0,4):
                 return pieces[selection]
