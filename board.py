@@ -171,22 +171,98 @@ class Board:
 
         return moves
     
+    def __find_king(self, colour):
+            """
+            Finds the king of the specified color on the board.
+
+            Args:
+                colour (str): The color of the king to find ('white' or 'black').
+
+            Returns:
+                Piece: The king Piece object if found, otherwise 0.
+            """
+            for x in range(8):
+                for y in range(8):
+                    piece = self.board_arr[x][y]
+                    if piece != 0 and piece.type == 'king' and piece.color == colour:
+                        return piece
+            return 0
+    
     def __check4check_helper(self, colour):
-        #check if king is in check
-        #if so, return True
-        #else, return False
-        
-        for x in range(8):
-            for y in range(8):
-                piece = self.board_arr[x][y]
-                if piece != 0:
-                    if piece.color != colour:
-                        for move in piece.moves:
-                            if self.board_arr[move[0]][move[1]] != 0:
-                                if self.board_arr[move[0]][move[1]].type == 'king' and self.board_arr[move[0]][move[1]].color == colour:
-                                    return True
-                                
-        return False
+            """
+            Helper method to check if the given color is in check.
+
+            Args:
+            - colour (str): The color of the king to check for check.
+
+            Returns:
+            - bool: True if the given color is in check, False otherwise.
+            """
+            king = self.__find_king(colour)
+            if king == 0:
+                return False
+            for dir in [(1,0),(0,1),(-1,0),(0,-1),(1,1),(-1,1),(1,-1),(-1,-1)]:
+                if self.__check4check_helper_helper(king.x, king.y, dir, colour):
+                    return True
+            for ks in [(1,2),(2,1),(-1,2),(-2,1),(1,-2),(2,-1),(-1,-2),(-2,-1)]:
+                if not self.__is_in_board(king.x + ks[0], king.y + ks[1]):
+                    continue
+                sq = self.board_arr[king.x + ks[0]][king.y + ks[1]]
+                if sq and sq.color != colour and sq.type == 'knight':
+                    return True
+            pc = [(1, 1), (-1, 1)] if colour == 'black' else [(1, -1), (-1, -1)]
+            for ps in pc:
+                if not self.__is_in_board(king.x + ps[0], king.y + ps[1]):
+                    continue
+                sq = self.board_arr[king.x + ps[0]][king.y + ps[1]]
+                if sq and sq.color != colour and sq.type == 'pawn':
+                    return True
+            return False
+    
+    def __check4check_helper_helper(self, x, y, dir, colour):
+            """
+            Helper method for checking a certain direction for checks.
+            Args:
+                x (int): x-coordinate of the king.
+                y (int): y-coordinate of the king.
+                dir (tuple): A tuple representing the direction check.
+                colour (str): The color of the player's king.
+            Returns:
+                bool: True if the king is in check, False otherwise.
+            """
+            ox, oy = x, y
+            x += dir[0]
+            y += dir[1]
+            which = ['queen']
+            if (dir[0] + dir[1]) % 2 == 0:
+                which.append('bishop')
+            else:
+                which.append('rook')
+            while self.__is_in_board(x, y):
+                sq = self.board_arr[x][y]
+                if sq != 0:
+                    if sq.color != colour:
+                        if sq.type in which:
+                            return True
+                        if sq.type == 'king' and abs(x - ox) <= 1 and abs(y - oy) <= 1:
+                            return True
+                    break
+                x += dir[0]
+                y += dir[1]
+            return False
+
+    def __is_in_board(self, x, y):
+            """
+            Check if the given coordinates are within the bounds of the chess board.
+
+            Args:
+                x (int): The x-coordinate to check.
+                y (int): The y-coordinate to check.
+
+            Returns:
+                bool: True if the coordinates are within the bounds of the board, False otherwise.
+            """
+            return 0 <= x <= 7 and 0 <= y <= 7
         
     def __init__(self, check_check = True):
         self.check_check = check_check
